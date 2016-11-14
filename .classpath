@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.aspectj.runtime_1.8.9.201604061446.jar"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.aspectj.weaver_1.8.9.201604061446.jar"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.aspectj.ajde_1.8.9.201604061446.jar"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.eclipse.equinox.weaving.aspectj_1.0.400.201604061446.jar"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.eclipse.aspectj_2.2.4.201604061446.jar"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.aspectj.weaver.source_1.8.9.201604061446.jar"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.aspectj.runtime.source_1.8.9.201604061446.jar"/>
+	<classpathentry kind="lib" path="C:/Zurich/Tools/eclipse 64/plugins/org.aspectj.ajde.source_1.8.9.201604061446.jar"/>
+	<classpathentry kind="con" path="org.eclipse.ajdt.core.ASPECTJRT_CONTAINER"/>
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>

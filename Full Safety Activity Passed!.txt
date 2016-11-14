@@ -1,0 +1,22 @@
+package com.example.helloaspect;
+
+import android.app.Activity;
+import android.content.Context;
+import android.widget.Toast;
+
+public aspect Test {
+	pointcut checkThis(Activity a): target(a) && (call (void checkExternalDependencies(Activity)));
+	
+	before(Activity a): checkThis(a) {
+		Object s =  thisJoinPoint.getThis();
+		Object t =  thisJoinPoint.getTarget(); // basicaly the same
+		System.err.println("This is new");
+		if(a != null) {
+			System.out.println("A is not null: "+a.getApplicationContext().toString());
+			Context context = a.getApplicationContext();
+			Toast.makeText(context, "Hurray!", Toast.LENGTH_LONG).show();
+		}
+	}
+
+}
+https://docs.google.com/spreadsheets/d/1lancMVnyIPaK9F4OqsF_FrwpkrrXbjXq7NWtSwNMvjE/edit#gid=0

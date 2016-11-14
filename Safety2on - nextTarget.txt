@@ -1,0 +1,35 @@
+package com.example.helloaspect;
+
+import java.lang.reflect.Field;
+
+import android.app.Activity;
+import android.content.Context;
+import android.widget.Toast;
+
+public aspect Test {
+	pointcut checkThis(): execution (void checkExternalDependencies());
+	
+	before(): checkThis(){
+		Object s =  thisJoinPoint.getThis();
+		Object t =  thisJoinPoint.getTarget();
+		System.err.println("This is new");
+		if(s != null) {
+			System.err.println("S is not null:"+s.toString());
+			try {
+				Field context = s.getClass().getField("context");
+				Context contex = (Context) context.get(context);
+				System.err.println(context.toString());
+				System.err.println(contex.toString());
+				Toast.makeText(contex, "Hurray, this is an aspect toast!", Toast.LENGTH_LONG).show();
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else System.err.println("S is null:");
+		if(t != null) System.err.println("T is not null:"+t.toString());
+		else System.err.println("T is null:");
+	}
+
+}

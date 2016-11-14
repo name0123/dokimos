@@ -1,0 +1,17 @@
+package com.example.helloaspect;
+
+
+public aspect Test {
+	pointcut checkThis(): execution (void checkExternalDependencies());
+	
+	before(): checkThis(){
+		Object s =  thisJoinPoint.getThis();
+		Object t =  thisJoinPoint.getTarget();
+		System.out.println("This is new");
+		if(s != null) System.out.println("S is not null:"+s.toString());
+		else System.out.println("S is null:");
+		if(t != null) System.out.println("T is not null:"+t.toString());
+		else System.out.println("T is null:");
+	}
+
+}
