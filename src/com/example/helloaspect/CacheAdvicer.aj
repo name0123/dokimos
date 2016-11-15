@@ -2,14 +2,19 @@ package com.example.helloaspect;
 
 import java.util.Map;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
-public aspect CacheAdvice {
-	pointcut checkThis(Activity a): target(a) && (call (void checkExternalDependencies(Activity)));
+public aspect CacheAdvicer {
+	pointcut checkThis(Activity a): target(a) && (call (void checkExternalDependencies(..)));
 	pointcut checkCache(Activity a): target(a) && (call (void cacheSearchResult(Activity)));
+	pointcut getPlacesName(Activity a, String searched): target(a) && (call (void getPlacesName(..))&& args(searched));
 	
 	
 	before(Activity a): checkThis(a) {
@@ -44,6 +49,5 @@ public aspect CacheAdvice {
 				}		
 			}
 		}
-	}	
-
+	}
 }

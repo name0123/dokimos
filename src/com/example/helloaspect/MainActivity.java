@@ -1,5 +1,9 @@
 package com.example.helloaspect;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -31,4 +35,7 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+
+
 }
