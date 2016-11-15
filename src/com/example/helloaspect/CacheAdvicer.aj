@@ -5,13 +5,23 @@ import java.util.Map;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Pointcut;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
-public aspect CacheAdvicer {
+public privileged aspect CacheAdvicer {
+	/*
+	pointcut doBack(Object[] o) : execution(protected JSONArray *.doInBackground(..)) && args(o);
+	
+	@Around("doBack(Object[] o"){)
+	void 
+		
+		
+	}
+	
 	pointcut checkThis(Activity a): target(a) && (call (void checkExternalDependencies(..)));
 	pointcut checkCache(Activity a): target(a) && (call (void cacheSearchResult(Activity)));
 	pointcut getPlacesName(Activity a, String searched): target(a) && (call (void getPlacesName(..))&& args(searched));
@@ -49,5 +59,5 @@ public aspect CacheAdvicer {
 				}		
 			}
 		}
-	}
+	} */
 }
