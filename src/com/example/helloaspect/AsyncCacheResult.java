@@ -26,23 +26,31 @@ public class AsyncCacheResult {
 	@Around("storePlaces(j,a)")
 		public void storePlaces(ProceedingJoinPoint thisJoinPoint, JSONArray j, Activity a ) {
 	    	System.out.println("Spike is here: ");
-	    	if(a != null && j != null) {
+	    	if(a != null) {
 				System.out.println("Activity and json not null: ");
 				Context context = a.getApplicationContext();
 				SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_PRIVATE);
 				if(sharedprf != null){
+					SharedPreferences.Editor ed = sharedprf.edit();
 					Map<String, String> allEntries = (Map<String, String>) sharedprf.getAll();
 					for (Map.Entry<String, String> entry : allEntries.entrySet()) {
 						String key = entry.getKey();
 						String value = entry.getValue();
-						System.out.println("Values: "+key+' '+value);
-						if("empty".equals(value)) {
-							SharedPreferences.Editor ed = sharedprf.edit();
-							String newValue = j.toString();
-							ed.putString(key, newValue);
-							ed.commit();
+						System.err.println("Values: "+key+' '+value+' '+j.toString());
+						if(j != null){
+							if("empty".equals(value)) {
+								String newValue = j.toString();
+								ed.putString(key, newValue);
+								ed.commit();
+							}	
 						}
-					}
+						else {
+				    		// here we discover no places for the searchedName, so we need to delete entry in cache
+				    		ed.remove(key); 
+				    		ed.apply();
+				    		ed.commit();
+				    	}						
+					}					
 				}
 				System.out.println("Cached info: "+j.toString());
 				thisJoinPoint.proceed(); // no canviem els args, pero mostrem els resultats
