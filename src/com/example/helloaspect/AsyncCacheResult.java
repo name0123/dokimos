@@ -25,7 +25,7 @@ public class AsyncCacheResult {
 	
 	@Around("storePlaces(j,a)")
 		public void storePlaces(ProceedingJoinPoint thisJoinPoint, JSONArray j, Activity a ) {
-	    	System.out.println("Spike is here: ");
+	    	//System.out.println("Spike is here: ");
 	    	if(a != null) {
 				System.out.println("Activity and json not null: ");
 				Context context = a.getApplicationContext();
@@ -36,12 +36,14 @@ public class AsyncCacheResult {
 					for (Map.Entry<String, String> entry : allEntries.entrySet()) {
 						String key = entry.getKey();
 						String value = entry.getValue();
-						System.err.println("Values: "+key+' '+value+' '+j.toString());
+						System.err.println("Map: "+key+' ');
 						if(j != null){
+							System.err.println(" value: "+j.toString());
 							if("empty".equals(value)) {
 								String newValue = j.toString();
 								ed.putString(key, newValue);
 								ed.commit();
+								System.out.println("Cached info: "+j.toString());
 							}	
 						}
 						else {
@@ -49,20 +51,18 @@ public class AsyncCacheResult {
 				    		ed.remove(key); 
 				    		ed.apply();
 				    		ed.commit();
+				    		thisJoinPoint.proceed(); // no canviem els args, pero mostrem els resultats
 				    	}						
 					}					
 				}
-				System.out.println("Cached info: "+j.toString());
-				thisJoinPoint.proceed(); // no canviem els args, pero mostrem els resultats
-				
 			}
 		}
 	 
    	@Around("getPlacesName(s,a)")
 	    public JSONArray getPlacesName(ProceedingJoinPoint thisJoinPoint, String s, Activity a ) {
-	    	System.out.println("Mike is here: ");
+	    	//System.out.println("Mike is here: ");
 	    	try {
-				JSONArray places = new JSONArray("[]");	
+				JSONArray places = null;	
 		    	boolean cachedSearch = false;
 		    	if(a != null && !s.equals("")) {
 					System.out.println("Activity is not null: ");
@@ -88,11 +88,12 @@ public class AsyncCacheResult {
 						try {
 							// la busquem - en el proxim Aspecte guardem els resultats en el lloc vaule="empty"
 							System.out.println("Abans de la crida a proced, keep doing");
-					    	thisJoinPoint.proceed(); // no canviem els args
-					    	System.out.println("Despres de la crida a proceed, keep doing");
-					    	SharedPreferences.Editor editor = sharedprf.edit();
+							SharedPreferences.Editor editor = sharedprf.edit();
 							editor.putString(s,"empty");
 							editor.commit();
+					    	thisJoinPoint.proceed(); // no canviem els args
+					    	System.out.println("Despres de la crida a proceed, keep doing");
+					    	
 							
 						} catch (Throwable e) {
 							// TODO Auto-generated catch block
