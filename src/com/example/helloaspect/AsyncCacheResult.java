@@ -30,7 +30,7 @@ public class AsyncCacheResult {
 	@Pointcut("execution(* *.votePlace(..)) && args(nvl, four_id, i,a)")
     void votePlace(String nvl, String four_id, Integer i, Activity a) {}
 	
-	@Pointcut("execution(* *.afterVote(..)) && args(j,a)")
+	@Pointcut("call(* *.afterVote(..)) && args(j,a)")
     void afterVote(JSONObject j, Activity a) {}
 	
 	@Pointcut("execution(* *.notGetPlaces(..)) && args(a)")
@@ -44,26 +44,21 @@ public class AsyncCacheResult {
 		
 	}
 	 
-	@Around("afterVote(j,a)")
-	public void afterVote(ProceedingJoinPoint thisJoinPoint, JSONObject j, Activity a) throws JSONException {
+	@Before("afterVote(j,a)")
+	public void bafterVote(JSONObject j, Activity a) throws JSONException {
 		if(a != null) {
-			System.out.println("afterVote: Activity not null: ");
+			System.out.println("afterVote: Activity not null: "+j);
 			Context context = a.getApplicationContext();
-			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_PRIVATE);
+			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
 			if(sharedprf != null){
+				System.out.println("afterVote: Shared were created and not empty ");				
 				SharedPreferences.Editor ed = sharedprf.edit();
-				if(j != null){
-					System.out.println("Meet j: "+j.toString());
-					String key = j.getString("four_id");
-					System.out.println("We are going to delte this: "+key);
-					ed.remove(key);
-					ed.commit();
-					thisJoinPoint.proceed(); // guardada - before would do the job	
-				}
-				// si j is null we do not execute after vote!
+				ed.clear();
+				ed.commit();
 			}
+			System.out.println("afterVote: shares were empty or something");
 		}
-		else thisJoinPoint.proceed(); // we still execute the afterVote: for userInfo (next: start check on the connection)
+
 	}
 	
 	@Around("votePlace(nvl,four_id, i,a)")
@@ -71,7 +66,7 @@ public class AsyncCacheResult {
 		if(a != null) {
 			System.out.println("storeVote: Activity not null: ");
 			Context context = a.getApplicationContext();
-			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_PRIVATE);
+			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
 			if(sharedprf != null){
 				SharedPreferences.Editor ed = sharedprf.edit();
 				if(nvl != null && four_id!= null){
@@ -87,11 +82,11 @@ public class AsyncCacheResult {
 	
 	@Around("storePlaces(j,a)")
 		public void storePlaces(ProceedingJoinPoint thisJoinPoint, JSONArray j, Activity a ) {
-	    	//System.out.println("Spike is here: ");
+	    	System.out.println("Spike is here: ");
 	    	if(a != null) {
-				System.out.println("Activity and json not null: ");
+				System.out.println("Activity not null: ");
 				Context context = a.getApplicationContext();
-				SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_PRIVATE);
+				SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
 				if(sharedprf != null){
 					SharedPreferences.Editor ed = sharedprf.edit();
 					Map<String, String> allEntries = (Map<String, String>) sharedprf.getAll();
@@ -124,14 +119,14 @@ public class AsyncCacheResult {
 	 
    	@Around("getPlacesName(s,a)")
 	    public JSONArray getPlacesName(ProceedingJoinPoint thisJoinPoint, String s, Activity a ) {
-	    	System.out.println("Mike is back: ");
+	    	System.out.println("Mike is back: "+s);
 	    	try {
 				JSONArray places = null;	
 		    	boolean cachedSearch = false;
-		    	if(a != null && !s.equals("")) {
+		    	if(a != null) {
 					System.out.println("Activity is not null: ");
 					Context context = a.getApplicationContext();
-					SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_PRIVATE);
+					SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
 					if(sharedprf != null){
 						Map<String, String> allEntries = (Map<String, String>) sharedprf.getAll();
 						for (Map.Entry<String, String> entry : allEntries.entrySet()) {
@@ -148,7 +143,7 @@ public class AsyncCacheResult {
 					}
 					System.out.println("Cache: "+cachedSearch);
 					if(!cachedSearch){
-						System.out.println("Correcte, keep doing");
+						System.out.println("Correcte, keep doing "+s);
 						// no tenim en cache la direccio buscada (redundant if)
 						try {
 							// la busquem - en el proxim Aspecte guardem els resultats en el lloc vaule="empty"
