@@ -49,7 +49,7 @@ public class AsyncCacheResult {
 		if(a != null) {
 			System.out.println("afterVote: Activity not null: ");
 			Context context = a.getApplicationContext();
-			SharedPreferences sharedprf = context.getSharedPreferences("VoteCache",Context.MODE_PRIVATE);
+			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_PRIVATE);
 			if(sharedprf != null){
 				SharedPreferences.Editor ed = sharedprf.edit();
 				if(j != null){
@@ -63,7 +63,7 @@ public class AsyncCacheResult {
 				// si j is null we do not execute after vote!
 			}
 		}
-		thisJoinPoint.proceed(); // we still execute the afterVote: for userInfo (next: start check on the connection)
+		else thisJoinPoint.proceed(); // we still execute the afterVote: for userInfo (next: start check on the connection)
 	}
 	
 	@Around("votePlace(nvl,four_id, i,a)")
@@ -71,17 +71,18 @@ public class AsyncCacheResult {
 		if(a != null) {
 			System.out.println("storeVote: Activity not null: ");
 			Context context = a.getApplicationContext();
-			SharedPreferences sharedprf = context.getSharedPreferences("VoteCache",Context.MODE_PRIVATE);
+			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_PRIVATE);
 			if(sharedprf != null){
 				SharedPreferences.Editor ed = sharedprf.edit();
 				if(nvl != null && four_id!= null){
-					System.err.println(" value: "+nvl);
+					//System.err.println(" value: "+nvl);
 					ed.putString(four_id, nvl);
 					ed.commit();
-					thisJoinPoint.proceed(); // guardada - before would do the job	
+						
 				}
 			}
 		}
+		thisJoinPoint.proceed(); // guardada - aspect before would do the job
 	}
 	
 	@Around("storePlaces(j,a)")
