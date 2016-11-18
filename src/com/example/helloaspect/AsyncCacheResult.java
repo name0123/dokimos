@@ -1,13 +1,18 @@
 package com.example.helloaspect;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,11 +22,67 @@ import android.content.SharedPreferences;
 public class AsyncCacheResult {
 	
 	@Pointcut("execution(* *.getPlacesName(..)) && args(s,a)")
-	    void getPlacesName(String s, Activity a) {}
+	void getPlacesName(String s, Activity a) {}
 
 	@Pointcut("execution(* *.showPlaces(..)) && args(j,a)")
 	    void storePlaces(JSONArray j, Activity a) {}
 	
+	@Pointcut("execution(* *.votePlace(..)) && args(nvl, four_id, i,a)")
+    void votePlace(String nvl, String four_id, Integer i, Activity a) {}
+	
+	@Pointcut("execution(* *.afterVote(..)) && args(j,a)")
+    void afterVote(JSONObject j, Activity a) {}
+	
+	@Pointcut("execution(* *.notGetPlaces(..)) && args(a)")
+    void notGetPlaces(Activity a) {}
+	
+	@Around("notGetPlaces(a)")
+	public String notGetPlaces(ProceedingJoinPoint thisJoinPoint, Activity a) throws UnknownHostException, IOException{
+// LA FUNCION YA N EXISTE:: AQUI NO PONGAS ASPECTO SI NO CAMBIAS EL NOMBRE!
+		// result of posting is null, check internet, and dependency-
+		return "IMGOOD";
+		
+	}
+	 
+	@Around("afterVote(j,a)")
+	public void afterVote(ProceedingJoinPoint thisJoinPoint, JSONObject j, Activity a) throws JSONException {
+		if(a != null) {
+			System.out.println("afterVote: Activity not null: ");
+			Context context = a.getApplicationContext();
+			SharedPreferences sharedprf = context.getSharedPreferences("VoteCache",Context.MODE_PRIVATE);
+			if(sharedprf != null){
+				SharedPreferences.Editor ed = sharedprf.edit();
+				if(j != null){
+					System.out.println("Meet j: "+j.toString());
+					String key = j.getString("four_id");
+					System.out.println("We are going to delte this: "+key);
+					ed.remove(key);
+					ed.commit();
+					thisJoinPoint.proceed(); // guardada - before would do the job	
+				}
+				// si j is null we do not execute after vote!
+			}
+		}
+		thisJoinPoint.proceed(); // we still execute the afterVote: for userInfo (next: start check on the connection)
+	}
+	
+	@Around("votePlace(nvl,four_id, i,a)")
+	public void votePlace(ProceedingJoinPoint thisJoinPoint, String nvl, String four_id, Integer i, Activity a) {
+		if(a != null) {
+			System.out.println("storeVote: Activity not null: ");
+			Context context = a.getApplicationContext();
+			SharedPreferences sharedprf = context.getSharedPreferences("VoteCache",Context.MODE_PRIVATE);
+			if(sharedprf != null){
+				SharedPreferences.Editor ed = sharedprf.edit();
+				if(nvl != null && four_id!= null){
+					System.err.println(" value: "+nvl);
+					ed.putString(four_id, nvl);
+					ed.commit();
+					thisJoinPoint.proceed(); // guardada - before would do the job	
+				}
+			}
+		}
+	}
 	
 	@Around("storePlaces(j,a)")
 		public void storePlaces(ProceedingJoinPoint thisJoinPoint, JSONArray j, Activity a ) {
@@ -51,16 +112,18 @@ public class AsyncCacheResult {
 				    		ed.remove(key); 
 				    		ed.apply();
 				    		ed.commit();
-				    		thisJoinPoint.proceed(); // no canviem els args, pero mostrem els resultats
-				    	}						
+				    		
+				    	}
+						thisJoinPoint.proceed(); // no canviem els args, pero mostrem els resultats
 					}					
 				}
+				else thisJoinPoint.proceed();
 			}
 		}
 	 
    	@Around("getPlacesName(s,a)")
 	    public JSONArray getPlacesName(ProceedingJoinPoint thisJoinPoint, String s, Activity a ) {
-	    	//System.out.println("Mike is here: ");
+	    	System.out.println("Mike is back: ");
 	    	try {
 				JSONArray places = null;	
 		    	boolean cachedSearch = false;
@@ -77,6 +140,7 @@ public class AsyncCacheResult {
 							if(s.equals(key) && !"empty".equals(value)) {
 								places = new JSONArray(value); 
 								cachedSearch = true;
+								// this might be, proceed, with new params!check cache, show markers?
 								return places;
 							}
 						}
