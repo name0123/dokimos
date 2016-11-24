@@ -50,12 +50,27 @@ public class AsyncCacheResult {
 			System.out.println("afterVote: Activity not null: "+j);
 			Context context = a.getApplicationContext();
 			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_PRIVATE);
+			// delete only one vote! 
 			if(sharedprf != null && j != null){
-				System.out.println("afterVote: Shared were created and not empty ");				
 				SharedPreferences.Editor ed = sharedprf.edit();
-				ed.clear();
-				ed.commit();
+				Map<String, String> allEntries = (Map<String, String>) sharedprf.getAll();
+				for (Map.Entry<String, String> entry : allEntries.entrySet()) {
+					String key = entry.getKey();
+					String value = entry.getValue();
+					try{
+					
+						if(key.equals(j.getString("four_id"))){
+							System.out.println("warning, bafter is deleting something: "+ key);						
+							ed.remove(key);
+							ed.apply();
+			
+						}		
+					}catch (Exception e){
+						e.printStackTrace();
+					}
+				}
 			}
+			
 			System.out.println("afterVote: shares were emptied!");
 		}
 
@@ -72,7 +87,7 @@ public class AsyncCacheResult {
 				if(nvl != null && four_id!= null){
 					System.out.println("   value: "+nvl);
 					ed.putString(four_id, nvl);
-					ed.commit();
+					ed.apply();
 						
 				}
 			}
@@ -99,16 +114,15 @@ public class AsyncCacheResult {
 							if("empty".equals(value)) {
 								String newValue = j.toString();
 								ed.putString(key, newValue);
-								ed.commit();
+								ed.apply();
 								System.out.println("Cached info: "+j.toString());
 							}	
 						}
 						else {
 				    		// here we discover no places for the searchedName, so we need to delete entry in cache
+							System.out.println("This is not entering here, or something is wrong"+key);
 				    		ed.remove(key); 
 				    		ed.apply();
-				    		ed.commit();
-				    		
 				    	}
 						thisJoinPoint.proceed(); // no canviem els args, pero mostrem els resultats
 					}					
@@ -150,7 +164,7 @@ public class AsyncCacheResult {
 							System.out.println("Abans de la crida a proced, keep doing");
 							SharedPreferences.Editor editor = sharedprf.edit();
 							editor.putString(s,"empty");
-							editor.commit();
+							editor.apply();
 					    	thisJoinPoint.proceed(); // no canviem els args
 					    	System.out.println("Despres de la crida a proceed, keep doing");
 					    	
