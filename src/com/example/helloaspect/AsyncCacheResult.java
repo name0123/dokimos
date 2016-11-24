@@ -49,14 +49,14 @@ public class AsyncCacheResult {
 		if(a != null) {
 			System.out.println("afterVote: Activity not null: "+j);
 			Context context = a.getApplicationContext();
-			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
-			if(sharedprf != null){
+			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_PRIVATE);
+			if(sharedprf != null && j != null){
 				System.out.println("afterVote: Shared were created and not empty ");				
 				SharedPreferences.Editor ed = sharedprf.edit();
 				ed.clear();
 				ed.commit();
 			}
-			System.out.println("afterVote: shares were empty or something");
+			System.out.println("afterVote: shares were emptied!");
 		}
 
 	}
@@ -64,13 +64,13 @@ public class AsyncCacheResult {
 	@Around("votePlace(nvl,four_id, i,a)")
 	public void votePlace(ProceedingJoinPoint thisJoinPoint, String nvl, String four_id, Integer i, Activity a) {
 		if(a != null) {
-			System.out.println("storeVote: Activity not null: ");
+			System.out.print("storeVote: Activity not null: "+four_id);
 			Context context = a.getApplicationContext();
-			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
+			SharedPreferences sharedprf = context.getSharedPreferences("DirtyVoteCache",Context.MODE_PRIVATE);
 			if(sharedprf != null){
 				SharedPreferences.Editor ed = sharedprf.edit();
 				if(nvl != null && four_id!= null){
-					//System.err.println(" value: "+nvl);
+					System.out.println("   value: "+nvl);
 					ed.putString(four_id, nvl);
 					ed.commit();
 						
@@ -86,7 +86,7 @@ public class AsyncCacheResult {
 	    	if(a != null) {
 				System.out.println("Activity not null: ");
 				Context context = a.getApplicationContext();
-				SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
+				SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_PRIVATE);
 				if(sharedprf != null){
 					SharedPreferences.Editor ed = sharedprf.edit();
 					Map<String, String> allEntries = (Map<String, String>) sharedprf.getAll();
@@ -126,7 +126,7 @@ public class AsyncCacheResult {
 		    	if(a != null) {
 					System.out.println("Activity is not null: ");
 					Context context = a.getApplicationContext();
-					SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
+					SharedPreferences sharedprf = context.getSharedPreferences("SearchCache",Context.MODE_PRIVATE);
 					if(sharedprf != null){
 						Map<String, String> allEntries = (Map<String, String>) sharedprf.getAll();
 						for (Map.Entry<String, String> entry : allEntries.entrySet()) {
