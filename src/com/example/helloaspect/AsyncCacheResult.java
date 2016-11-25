@@ -56,7 +56,6 @@ public class AsyncCacheResult {
 				Map<String, String> allEntries = (Map<String, String>) sharedprf.getAll();
 				for (Map.Entry<String, String> entry : allEntries.entrySet()) {
 					String key = entry.getKey();
-					String value = entry.getValue();
 					try{
 					
 						if(key.equals(j.getString("four_id"))){
@@ -146,8 +145,10 @@ public class AsyncCacheResult {
 						for (Map.Entry<String, String> entry : allEntries.entrySet()) {
 							String key = entry.getKey();
 							String value = entry.getValue();
+							System.out.println("Searched:" + s +" vs entrada: "+key);
 							System.out.println("Values: "+key+' '+value);
 							if(s.equals(key) && !"empty".equals(value)) {
+								System.out.println("Good step in Mike");
 								places = new JSONArray(value); 
 								cachedSearch = true;
 								// this might be, proceed, with new params!check cache, show markers?
